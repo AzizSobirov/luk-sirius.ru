@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Вход через Telegram</title>
+    <style>
+      body {
+        font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        min-height: 100vh;
+        margin: 0;
+        padding: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .container {
+        background: #ffffff;
+        padding: 40px;
+        border-radius: 20px;
+        max-width: 400px;
+        width: 90%;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease;
+      }
+      .container:hover {
+        transform: translateY(-5px);
+      }
+      h2 {
+        color: #2f3542;
+        margin-bottom: 30px;
+        font-size: 24px;
+      }
+      #qrcode {
+        margin: 30px auto;
+        padding: 15px;
+        background: #f8f9fa;
+        border-radius: 12px;
+        max-width: fit-content;
+      }
+      .status {
+        margin-top: 25px;
+        font-weight: 500;
+        color: #424242;
+        padding: 15px;
+        border-radius: 8px;
+        background: #f8f9fa;
+      }
+      .success {
+        background: #e8f5e9;
+        color: #2e7d32;
+      }
+      .error {
+        background: #ffebee;
+        color: #c62828;
+      }
+      .waiting {
+        background: #e3f2fd;
+        color: #1565c0;
+      }
+      a {
+        display: inline-block;
+        margin-top: 15px;
+        color: #2196f3;
+        text-decoration: none;
+        font-size: 14px;
+        word-break: break-word;
+        transition: color 0.2s ease;
+      }
+      a:hover {
+        color: #1976d2;
+      }
+      .loader {
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        border: 3px solid #f3f3f3;
+        border-radius: 50%;
+        border-top: 3px solid #3498db;
+        animation: spin 1s linear infinite;
+        margin-right: 10px;
+      }
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+      .telegram-btn {
+        background-color: #27A7E7;
+        color: white;
+        border: none;
+        padding: 12px 25px;
+        border-radius: 8px;
+        font-size: 16px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin: 20px auto;
+        transition: all 0.3s ease;
+      }
+      .telegram-btn:hover {
+        background-color: #229AD6;
+        transform: translateY(-2px);
+      }
+      .telegram-icon {
+        width: 24px;
+        height: 24px;
+      }
+      .hidden {
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h2>Вход через Telegram</h2>
+      
+      <button id="telegramBtn" class="telegram-btn">
+        <svg class="telegram-icon" viewBox="0 0 24 24" fill="white">
+          <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.562 8.161c-.18 1.897-.962 6.502-1.359 8.627-.168.9-.504 1.201-.825 1.23-.703.064-1.236-.461-1.917-.903-1.064-.69-1.666-1.12-2.7-1.792-1.197-.777-.422-1.205.261-1.904.179-.182 3.282-3.017 3.342-3.275.007-.032.014-.157-.059-.223-.073-.066-.216-.043-.31-.025-.131.025-2.22 1.409-6.266 4.152-.592.408-1.127.607-1.606.596-.528-.012-1.543-.301-2.296-.548-.933-.307-1.675-.471-1.612-.991.034-.275.391-.562 1.072-.862 4.193-1.825 6.992-3.029 8.398-3.611 4.006-1.666 4.839-1.954 5.385-1.965.119-.002.385.027.557.159.133.102.172.263.186.387.025.213-.017.491-.049.777z"/>
+        </svg>
+        Войти через Telegram
+      </button>
+
+      <div id="qrSection" class="hidden">
+        <div id="qrcode">Генерация QR-кода...</div>
+        <a id="link" href="#" target="_blank"></a>
+        <div class="status waiting" id="status">
+          <span class="loader"></span>
+          Проверка статуса сессии...
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+    <script>
+      const qrEl = document.getElementById("qrcode");
+      const linkEl = document.getElementById("link");
+      const statusEl = document.getElementById("status");
+
+      let authKey = null;
+
+      document.getElementById('telegramBtn').addEventListener('click', function() {
+        this.classList.add('hidden');
+        document.getElementById('qrSection').classList.remove('hidden');
+        generateAuth();
+      });
+
+      async function generateAuth() {
+        const res = await fetch("/api/auth/generate", {
+          method: "POST",
+        });
+        const data = await res.json();
+
+        if (!data.success) {
+          qrEl.innerText = "❌ QR код yaratilmadi.";
+          return;
+        }
+
+        authKey = data.authKey;
+        const botUrl = data.qrData;
+
+        // QR kodni yaratish
+        qrEl.innerHTML = "";
+        new QRCode(qrEl, {
+          text: botUrl,
+          width: 200,
+          height: 200,
+        });
+
+        linkEl.href = botUrl;
+        linkEl.innerText = botUrl;
+
+        checkStatus();
+      }
+
+      async function checkStatus() {
+        if (!authKey) return;
+
+        const res = await fetch(`/api/auth/status/${authKey}`);
+        const data = await res.json();
+
+        const statusEl = document.getElementById("status");
+
+        if (data.status === "completed") {
+          const user = data.user;
+          statusEl.className = "status success";
+          statusEl.innerHTML = `✅ Добро пожаловать, ${
+            user.firstName || "Пользователь"
+          }!<br>📱 ${user.phone}`;
+          return;
+        }
+
+        if (data.status === "expired") {
+          statusEl.className = "status error";
+          statusEl.innerHTML = "❌ Сессия истекла. Пожалуйста, попробуйте снова.";
+          return;
+        }
+
+        statusEl.className = "status waiting";
+        statusEl.innerHTML = '<span class="loader"></span>Ожидание подтверждения в Telegram...';
+        setTimeout(checkStatus, 3000);
+      }
+    </script>
+  </body>
+</html>

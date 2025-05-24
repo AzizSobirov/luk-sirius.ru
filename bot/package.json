@@ -1,0 +1,21 @@
+{
+  "name": "telegram-auth-system",
+  "version": "1.0.0",
+  "description": "Telegram bot authentication system with QR codes",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "nodemon app.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.5.0",
+    "express": "^5.1.0",
+    "grammy": "^1.36.1",
+    "mysql2": "^3.14.1",
+    "nodemon": "^3.1.10"
+  }
+}

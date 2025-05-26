@@ -316,9 +316,10 @@
 import { ref, onMounted, computed } from "vue";
 import { useRouter } from "vue-router";
 import { useStore } from "../store/index";
-import axios from "axios";
+// import axios from "axios";
 import { useSnilsValidator } from "../composables.js";
 import { usePopupStore } from "@/components/ThePopup";
+import http from "@/libs/axios.js";
 
 const popup = usePopupStore();
 const router = useRouter();
@@ -401,8 +402,8 @@ async function checkUser() {
       snils: snils.value,
     };
 
-    axios
-      .post(`https://espp.su/sirius/anketa.php`, query)
+    http
+      .post("/", query)
       .then(function (response) {
         if (response.data != "Empty") {
           //    console.log("Получены данные пользователя:", response.data.user);
@@ -414,16 +415,16 @@ async function checkUser() {
           const isAdmin = store.isAdmin;
           //    console.log("Пользователь является администратором:", isAdmin);
 
-          router.push("/main");
-          popup.fire({
-            icon: "success",
-            title: "Успешный вход",
-            text: isAdmin
-              ? "Вы вошли как администратор"
-              : "Вы вошли как пользователь",
-            timer: 1500,
-            showConfirmButton: false,
-          });
+          // router.push("/main");
+          // popup.fire({
+          //   icon: "success",
+          //   title: "Успешный вход",
+          //   text: isAdmin
+          //     ? "Вы вошли как администратор"
+          //     : "Вы вошли как пользователь",
+          //   timer: 1500,
+          //   showConfirmButton: false,
+          // });
         }
       })
       .catch(function (error) {
@@ -455,8 +456,8 @@ async function signUp() {
     telefon: tel.value,
   };
 
-  axios
-    .post(`https://espp.su/sirius/anketa.php`, user)
+  http
+    .post("/", user)
     .then(function (response) {
       popup.fire({
         icon: "success",

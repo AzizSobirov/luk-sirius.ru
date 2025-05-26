@@ -1,16 +1,24 @@
 <template>
   <div class="container auth-container">
-    <div class="auth">
+    <div class="tg-auth">
       <div class="auth__img-box img-box">
         <img class="auth__img" src="../assets/img/logo.jpg" alt="" />
       </div>
 
-      <div class="auth__content">
+      <div class="content">
         <h2>
-          Добро пожаловать в совместный образовательный проект ЛУКОЙЛ и Сириус
+          Добро пожаловать в совместный <br />
+          образовательный проект ЛУКОЙЛ и Сириус
         </h2>
 
-        <div class="login__item">
+        <button>Войти через Telegram</button>
+
+        <p>
+          При первом входе в систему вы соглашаетесь с
+          <a href="#">политикой конфиденциальности</a>
+        </p>
+
+        <!-- <div class="login__item">
           <h4>Если вы зарегистрированы, введите СНИЛС</h4>
           <span :class="{ invalid: !isSnilsValid }">
             <input
@@ -44,15 +52,23 @@
           </span>
           <p class="error" v-if="!isSnilsValid">СНИЛС недействительный</p>
         </div>
-        <!-- <h4>Согласие на обработку персональных данных</h4> 
-                <div class="login__item">
-                    
-                    <span>
-                        <div class="">
-                            <router-link to="/">Если Вы еще не зарегистрированы, нажмите на эту надпись</router-link>
-                        </div>
-                    </span>
-                </div> -->
+
+        <h4>Согласие на обработку персональных данных</h4> -->
+
+        <!-- <div class="login__item">
+          <input type="checkbox" id="consent" v-model="consent" />
+          <label for="consent"
+            >Я согласен на обработку персональных данных</label
+          >
+          <span>
+            <div class="">
+              <router-link to="/"
+                >Если Вы еще не зарегистрированы, нажмите на эту
+                надпись</router-link
+              >
+            </div>
+          </span>
+        </div> -->
       </div>
     </div>
   </div>
@@ -182,3 +198,33 @@ async function checkUser() {
   }
 }
 </script>
+
+<style lang="scss">
+.tg-auth {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+
+  .content {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+  }
+
+  button {
+    padding: 10px 20px;
+    border-radius: 99999px;
+    background-color: #1967d2;
+    color: #fff;
+  }
+
+  p {
+    color: #555;
+    font-size: 12px;
+  }
+}
+</style>

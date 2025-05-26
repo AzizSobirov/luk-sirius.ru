@@ -1,10 +1,10 @@
-@import url("https://fonts.googleapis.com/css2?family=Jost:wght@400;500;600&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap");
 
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: "Jost", sans-serif;
+  font-family: "Montserrat", sans-serif;
 }
 
 h1,
@@ -102,7 +102,7 @@ a {
       border-radius: 8px;
       gap: 20px;
     }
-    @media (height < 520px) { 
+    @media (height < 520px) {
       span {
         padding: 3px;
         font-size: 0.8rem;
@@ -110,7 +110,6 @@ a {
       .v-input__details {
         display: none;
       }
-
     }
 
     input,
@@ -245,7 +244,6 @@ a {
 
         @media screen and (max-width: 540px) {
           width: 100%;
-          
         }
 
         &.green {
@@ -495,7 +493,6 @@ a {
         order: -1;
       }
     }
-
   }
 }
 .row {
@@ -537,7 +534,7 @@ a {
 .back-btn {
   width: 200px;
   align-self: center;
-//   margin-top: 0.5rem;
+  //   margin-top: 0.5rem;
 }
 
 .modal {
@@ -750,7 +747,6 @@ a {
 }
 
 .auth {
- 
   height: max-content;
   display: flex;
   gap: 40px;
@@ -783,8 +779,6 @@ a {
     }
   }
 
-  
-
   &__img {
     max-height: 270px;
     // height: 100%;
@@ -800,4 +794,3 @@ a {
 .error {
   color: red;
 }
-

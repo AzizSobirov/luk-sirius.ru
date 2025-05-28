@@ -191,11 +191,7 @@ class AuthService {
     return {
       token,
       user: {
-        telegramId: user.telegramId,
-        username: user.username,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        phone: user.phone,
+        ...user.dataValues,
         isRegistered: user.isRegistered,
       },
     };

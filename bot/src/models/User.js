@@ -36,6 +36,49 @@ module.exports = (sequelize, DataTypes) => {
         defaultValue: false,
         field: "is_registered",
       },
+
+        // New fields
+      snils: {
+        type: DataTypes.STRING(20),
+        allowNull: true,
+      },
+      telefon: {
+        type: DataTypes.STRING(30),
+        allowNull: true,
+      },
+      familia: {
+        type: DataTypes.STRING(255),
+        allowNull: true,
+      },
+      imya: {
+        type: DataTypes.STRING(255),
+        allowNull: true,
+      },
+      otchestvo: {
+        type: DataTypes.STRING(255),
+        allowNull: true,
+      },
+      klass: {
+        type: DataTypes.STRING(10),
+        allowNull: true,
+      },
+      napravl: {
+        type: DataTypes.STRING(255),
+        allowNull: true,
+      },
+      obshestvo: {
+        type: DataTypes.STRING(255),
+        allowNull: true,
+      },
+      potok: {
+        type: DataTypes.STRING(255),
+        allowNull: true,
+      },
+      dateRozdenia: {
+        type: DataTypes.DATEONLY,
+        allowNull: true,
+        field: "date_rozdenia",
+      },
     },
     {
       tableName: "users",

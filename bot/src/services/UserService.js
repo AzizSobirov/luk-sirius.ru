@@ -24,16 +24,7 @@ class UserService {
       throw new Error("User not found");
     }
 
-    return {
-      telegramId: user.telegramId,
-      username: user.username,
-      firstName: user.firstName,
-      lastName: user.lastName,
-      phone: user.phone,
-      isRegistered: user.isRegistered,
-      createdAt: user.createdAt,
-      updatedAt: user.updatedAt,
-    };
+    return user;
   }
 
   async completeRegistration(telegramId, additionalData = {}) {

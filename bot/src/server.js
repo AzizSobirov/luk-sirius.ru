@@ -22,15 +22,10 @@ app.use("/api", apiRoutes);
 
 // Cleanup functions
 function setupCleanupTasks() {
-  // Clean expired sessions every minute
+  // Clean database sessions every 24 hours (once per day)
   setInterval(() => {
     AuthService.cleanExpiredSessions();
-  }, 60000);
-
-  // Clean database sessions every 10 minutes
-  setInterval(() => {
-    AuthService.cleanExpiredSessions();
-  }, 10 * 60 * 1000);
+  }, 24 * 60 * 60 * 1000);
 }
 
 // Graceful shutdown
@@ -58,7 +53,7 @@ async function startServer() {
     console.log("✅ Database connection established successfully");
 
     // Sync database (create tables if they don't exist)
-    await sequelize.sync();
+    await sequelize.sync({ alter: true });
     console.log("✅ Database synchronized");
 
     // Clean expired sessions on startup

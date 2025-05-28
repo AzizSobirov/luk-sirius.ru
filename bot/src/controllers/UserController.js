@@ -5,6 +5,7 @@ class UserController {
   async getUser(req, res) {
     try {
       const { telegramId } = req.params;
+
       const user = await UserService.getUserById(telegramId);
 
       res.json({
@@ -64,12 +65,10 @@ class UserController {
     try {
       const { telegramId } = req.user;
       const user = await UserService.getUserById(telegramId);
-      const token = AuthService.generateToken(user);
 
       res.json({
         success: true,
         user,
-        token,
       });
     } catch (error) {
       console.error("Get current user error:", error);

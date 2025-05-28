@@ -127,10 +127,12 @@ import { useRouter } from "vue-router";
 import { useStore } from "../store/index";
 import axios from "axios";
 import { usePopupStore } from "@/components/ThePopup";
+import { useCookie } from "@/composables.js";
 
 const popup = usePopupStore();
 const store = useStore();
 const router = useRouter();
+const { deleteCookie } = useCookie();
 
 // variables
 const url = ref("");
@@ -375,8 +377,11 @@ function removeData(id, role) {
 
 // back to login
 function backLogin() {
+  console.log("back to login");
+
   // delete user from local storage
   store.deleteUser();
-  router.push("/");
+  deleteCookie("token");
+  router.push("/auth");
 }
 </script>

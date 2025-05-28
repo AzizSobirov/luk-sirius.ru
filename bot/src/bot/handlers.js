@@ -13,7 +13,7 @@ class BotHandlers {
         "👋 Привет! Я бот для аутентификации.\n\n" +
           "🔐 Для входа на сайт отсканируйте QR-код или перейдите по ссылке.",
         {
-          reply_markup: new InlineKeyboard().text(
+          reply_markup: new InlineKeyboard().url(
             "🌐 Перейти на сайт",
             config.frontendUrl
           ),
@@ -39,7 +39,7 @@ class BotHandlers {
           "❌ Сессия не найдена или истекла.\n\n" +
             "Пожалуйста, получите новый QR-код на сайте.",
           {
-            reply_markup: new InlineKeyboard().text(
+            reply_markup: new InlineKeyboard().url(
               "🌐 Перейти на сайт",
               config.frontendUrl
             ),
@@ -106,7 +106,7 @@ class BotHandlers {
           "❌ Активная сессия не найдена.\n\n" +
             "Пожалуйста, начните вход заново с сайта.",
           {
-            reply_markup: new InlineKeyboard().text(
+            reply_markup: new InlineKeyboard().url(
               "🌐 Перейти на сайт",
               config.frontendUrl
             ),
@@ -137,8 +137,8 @@ class BotHandlers {
       AuthService.updateSessionStatus(userSessionKey, "completed", telegramId, token);
 
       // Success message with action button
-      const keyboard = new InlineKeyboard().text(
-        "🌐 Saytga qaytish",
+      const keyboard = new InlineKeyboard().url(
+        "🌐 Вернуться на сайт",
         config.frontendUrl
       );
 

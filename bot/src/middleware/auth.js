@@ -1,17 +1,17 @@
-const jwt = require('jsonwebtoken');
-const config = require('../config/app');
+const jwt = require("jsonwebtoken");
+const config = require("../config/app");
 
 const verifyToken = (req, res, next) => {
-  const bearerHeader = req.headers['authorization'];
-  
+  const bearerHeader = req.headers["authorization"];
+
   if (!bearerHeader) {
     return res.status(401).json({
       success: false,
-      error: 'No token provided'
+      error: "No token provided",
     });
   }
 
-  const token = bearerHeader.split(' ')[1];
+  const token = bearerHeader.split(" ")[1];
 
   try {
     const decoded = jwt.verify(token, config.jwt.secret);
@@ -20,7 +20,7 @@ const verifyToken = (req, res, next) => {
   } catch (error) {
     return res.status(401).json({
       success: false,
-      error: 'Invalid token'
+      error: "Invalid token",
     });
   }
 };

@@ -1,5 +1,6 @@
 const AuthService = require("../services/AuthService");
 const { AuthSession } = require("../models");
+const { User } = require("../models");
 
 class AuthController {
   async generateAuth(req, res) {
@@ -58,7 +59,23 @@ class AuthController {
 
   async registerUser(req, res) {
     try {
-      const { telegramId, username, firstName, lastName, phone } = req.body;
+      const {
+        telegramId,
+        username,
+        firstName,
+        lastName,
+        phone,
+        snils,
+        telefon,
+        familia,
+        imya,
+        otchestvo,
+        klass,
+        napravl,
+        obshestvo,
+        potok,
+        dateRozdenia,
+      } = req.body;
 
       if (!telegramId) {
         return res.status(400).json({
@@ -73,11 +90,20 @@ class AuthController {
         firstName,
         lastName,
         phone,
+        snils,
+        telefon,
+        familia,
+        imya,
+        otchestvo,
+        klass,
+        napravl,
+        obshestvo,
+        potok,
+        dateRozdenia,
       });
 
       res.json({
         success: true,
-        token: result.token,
         user: result.user,
       });
     } catch (error) {
@@ -94,6 +120,29 @@ class AuthController {
         success: false,
         error: "Internal server error",
       });
+    }
+  }
+
+  async checkUserSNILS(req, res) {
+    try {
+      const { snils } = req.params;
+
+      if (!snils) {
+        return res.status(400).json({ error: "SNILS is required" });
+      }
+
+      const user = await User.findOne({ where: { snils } });
+
+      if (user) {
+        return res.status(200).json({ exists: true, user });
+      } else {
+        return res
+          .status(202)
+          .json({ exists: false, message: "User not found" });
+      }
+    } catch (error) {
+      console.error("Error checking SNILS:", error);
+      return res.status(500).json({ error: "Internal server error" });
     }
   }
 }

@@ -132,11 +132,12 @@ const checkStatus = async () => {
       // Close modal on success
       showModal.value = false;
 
+      store.setUser(data.user);
+      setCookie("token", data.token);
+
       if (!data.user.isRegistered) {
         router.push("/auth/register");
       } else {
-        // Handle successful login - redirect to dashboard or store user data
-        setCookie("token", data.token);
         router.push("/");
       }
 

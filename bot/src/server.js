@@ -7,6 +7,8 @@ const { setupMiddleware } = require("./middleware");
 const AuthService = require("./services/AuthService");
 const TelegramBot = require("./bot");
 const config = require("./config/app");
+const swaggerUi = require("swagger-ui-express");
+const swaggerDocument = require("./docs/swagger.json");
 
 const app = express();
 
@@ -17,6 +19,9 @@ setupMiddleware(app);
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "index.html"));
 });
+
+// Swagger documentation
+app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 app.use("/api", apiRoutes);
 

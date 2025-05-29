@@ -1,245 +1,419 @@
 <!DOCTYPE html>
 <html lang="ru">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Вход через Telegram</title>
-    <style>
-      body {
-        font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
-        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-        min-height: 100vh;
-        margin: 0;
-        padding: 20px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-      .container {
-        background: #ffffff;
-        padding: 40px;
-        border-radius: 20px;
-        max-width: 400px;
-        width: 90%;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-        transition: transform 0.3s ease;
-      }
-      .container:hover {
-        transform: translateY(-5px);
-      }
-      h2 {
-        color: #2f3542;
-        margin-bottom: 30px;
-        font-size: 24px;
-      }
-      #qrcode {
-        margin: 30px auto;
-        padding: 15px;
-        background: #f8f9fa;
-        border-radius: 12px;
-        max-width: fit-content;
-      }
-      .status {
-        margin-top: 25px;
-        font-weight: 500;
-        color: #424242;
-        padding: 15px;
-        border-radius: 8px;
-        background: #f8f9fa;
-      }
-      .success {
-        background: #e8f5e9;
-        color: #2e7d32;
-      }
-      .error {
-        background: #ffebee;
-        color: #c62828;
-      }
-      .waiting {
-        background: #e3f2fd;
-        color: #1565c0;
-      }
-      a {
-        display: inline-block;
-        margin-top: 15px;
-        color: #2196f3;
-        text-decoration: none;
-        font-size: 14px;
-        word-break: break-word;
-        transition: color 0.2s ease;
-      }
-      a:hover {
-        color: #1976d2;
-      }
-      .loader {
-        display: inline-block;
-        width: 20px;
-        height: 20px;
-        border: 3px solid #f3f3f3;
-        border-radius: 50%;
-        border-top: 3px solid #3498db;
-        animation: spin 1s linear infinite;
-        margin-right: 10px;
-      }
-      @keyframes spin {
-        0% {
-          transform: rotate(0deg);
-        }
-        100% {
-          transform: rotate(360deg);
-        }
-      }
-      .telegram-btn {
-        background-color: #27a7e7;
-        color: white;
-        border: none;
-        padding: 12px 25px;
-        border-radius: 8px;
-        font-size: 16px;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        margin: 20px auto;
-        transition: all 0.3s ease;
-      }
-      .telegram-btn:hover {
-        background-color: #229ad6;
-        transform: translateY(-2px);
-      }
-      .telegram-icon {
-        width: 24px;
-        height: 24px;
-      }
-      .hidden {
-        display: none;
-      }
-    </style>
-  </head>
-  <body>
-    <div class="container">
-      <h2>Вход через Telegram</h2>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Telegram Auth System Documentation</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      line-height: 1.6;
+      color: #333;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    h1 {
+      border-bottom: 1px solid #eaecef;
+      padding-bottom: 0.3em;
+    }
+    h2 {
+      margin-top: 24px;
+      margin-bottom: 16px;
+      font-weight: 600;
+      line-height: 1.25;
+      padding-bottom: 0.3em;
+      border-bottom: 1px solid #eaecef;
+    }
+    code {
+      background-color: rgba(27, 31, 35, 0.05);
+      border-radius: 3px;
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+      font-size: 85%;
+      margin: 0;
+      padding: 0.2em 0.4em;
+    }
+    pre {
+      background-color: #f6f8fa;
+      border-radius: 3px;
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+      font-size: 85%;
+      line-height: 1.45;
+      overflow: auto;
+      padding: 16px;
+    }
+    a {
+      color: #0366d6;
+      text-decoration: none;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+    .api-section {
+      margin-bottom: 30px;
+    }
+    .endpoint {
+      margin-bottom: 20px;
+    }
+    .method {
+      font-weight: bold;
+      color: #fff;
+      padding: 4px 8px;
+      border-radius: 4px;
+      display: inline-block;
+      margin-right: 10px;
+    }
+    .get { background-color: #61affe; }
+    .post { background-color: #49cc90; }
+    .delete { background-color: #f93e3e; }
+    .put { background-color: #fca130; }
+    
+    .language-selector {
+      text-align: right;
+      margin-bottom: 20px;
+    }
+    
+    .language-btn {
+      display: inline-block;
+      padding: 5px 10px;
+      margin-left: 5px;
+      background-color: #f1f1f1;
+      border-radius: 3px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    
+    .language-btn.active {
+      background-color: #0366d6;
+      color: white;
+    }
+    
+    .lang-section {
+      display: none;
+    }
+    
+    .lang-section.active {
+      display: block;
+    }
+    
+    /* New styles for documentation link */
+    .docs-link-container {
+      margin: 30px 0;
+      padding: 20px;
+      background-color: #e3f2fd;
+      border-radius: 8px;
+      border-left: 5px solid #0366d6;
+      text-align: center;
+    }
+    
+    .docs-link {
+      display: inline-block;
+      margin: 10px 0;
+      padding: 12px 24px;
+      background-color: #0366d6;
+      color: white;
+      border-radius: 4px;
+      font-weight: bold;
+      text-decoration: none;
+      transition: background-color 0.3s;
+    }
+    
+    .docs-link:hover {
+      background-color: #0257ba;
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="language-selector">
+    <span class="language-btn active" data-lang="ru">Русский</span>
+    <span class="language-btn" data-lang="en">English</span>
+  </div>
 
-      <button id="telegramBtn" class="telegram-btn">
-        <svg class="telegram-icon" viewBox="0 0 24 24" fill="white">
-          <path
-            d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.562 8.161c-.18 1.897-.962 6.502-1.359 8.627-.168.9-.504 1.201-.825 1.23-.703.064-1.236-.461-1.917-.903-1.064-.69-1.666-1.12-2.7-1.792-1.197-.777-.422-1.205.261-1.904.179-.182 3.282-3.017 3.342-3.275.007-.032.014-.157-.059-.223-.073-.066-.216-.043-.31-.025-.131.025-2.22 1.409-6.266 4.152-.592.408-1.127.607-1.606.596-.528-.012-1.543-.301-2.296-.548-.933-.307-1.675-.471-1.612-.991.034-.275.391-.562 1.072-.862 4.193-1.825 6.992-3.029 8.398-3.611 4.006-1.666 4.839-1.954 5.385-1.965.119-.002.385.027.557.159.133.102.172.263.186.387.025.213-.017.491-.049.777z"
-          />
-        </svg>
-        Войти через Telegram
-      </button>
+  <!-- RUSSIAN VERSION -->
+  <div id="ru-content" class="lang-section active">
+    <h1>Система аутентификации через Telegram</h1>
+    
+    <div class="docs-link-container">
+      <p>Интерактивная документация API доступна по ссылке:</p>
+      <a href="/docs" class="docs-link">Открыть Swagger документацию</a>
+    </div>
+    
+    <p>Данная система предназначена для аутентификации пользователей через Telegram. Она обеспечивает безопасный и удобный способ реализации функционала входа с использованием механизма аутентификации Telegram.</p>
+    
+    <h2>Возможности</h2>
+    <ul>
+      <li>Аутентификация через Telegram с использованием QR-кода</li>
+      <li>Генерация JWT-токенов для доступа к API</li>
+      <li>Управление пользователями с дополнительными данными профиля</li>
+      <li>Аутентификация на основе сессий</li>
+      <li>Интеграция с ботом Telegram</li>
+    </ul>
+    
+    <h2>Начало работы</h2>
+    <p>Для использования этого API:</p>
+    <ol>
+      <li>Настройте переменные окружения в файле <code>.env</code> (см. раздел "Конфигурация")</li>
+      <li>Установите зависимости с помощью <code>npm install</code></li>
+      <li>Запустите сервер с помощью <code>npm start</code> или <code>npm run dev</code> для разработки</li>
+    </ol>
+    
+    <h2>Конфигурация</h2>
+    <p>Необходимые переменные окружения:</p>
+    <pre>
+# Сервер
+PORT=3000
+NODE_ENV=development
 
-      <div id="qrSection" class="hidden">
-        <div id="qrcode">Генерация QR-кода...</div>
-        <a id="link" href="#" target="_blank"></a>
-        <div class="status waiting" id="status">
-          <span class="loader"></span>
-          Проверка статуса сессии...
+# База данных
+DB_HOST=localhost
+DB_USER=your_db_user
+DB_PASSWORD=your_db_password
+DB_NAME=your_db_name
+DB_PORT=3306
+
+# Telegram бот
+BOT_TOKEN=your_telegram_bot_token
+BOT_USERNAME=your_bot_username
+
+# Аутентификация
+JWT_SECRET=your_jwt_secret
+JWT_EXPIRES_IN=7d
+SESSION_EXPIRE_MINUTES=5
+
+# Фронтенд
+FRONTEND_URL=http://localhost:3000
+    </pre>
+    
+    <h2>Документация API</h2>
+    <p>Полная документация API доступна по адресу <a href="/docs">/docs</a> с использованием Swagger UI. Она предоставляет интерактивный интерфейс для тестирования всех эндпоинтов API.</p>
+    
+    <div class="api-section">
+      <h3>Конечные точки аутентификации</h3>
+      
+      <div class="endpoint">
+        <div>
+          <span class="method post">POST</span>
+          <code>/api/auth/generate</code>
         </div>
-
-        <button onclick="register()">Register</button>
+        <p>Генерирует новую сессию аутентификации для входа по QR-коду</p>
+      </div>
+      
+      <div class="endpoint">
+        <div>
+          <span class="method get">GET</span>
+          <code>/api/auth/status/:key</code>
+        </div>
+        <p>Возвращает статус сессии аутентификации</p>
+      </div>
+      
+      <div class="endpoint">
+        <div>
+          <span class="method post">POST</span>
+          <code>/api/auth/register</code>
+        </div>
+        <p>Регистрирует нового пользователя с предоставленной информацией</p>
+      </div>
+      
+      <div class="endpoint">
+        <div>
+          <span class="method get">GET</span>
+          <code>/api/auth/check/:snils</code>
+        </div>
+        <p>Проверяет, существует ли пользователь с указанным СНИЛС</p>
       </div>
     </div>
+    
+    <div class="api-section">
+      <h3>Конечные точки пользователя</h3>
+      
+      <div class="endpoint">
+        <div>
+          <span class="method get">GET</span>
+          <code>/api/user/me</code>
+        </div>
+        <p>Возвращает информацию о текущем аутентифицированном пользователе</p>
+      </div>
+      
+      <div class="endpoint">
+        <div>
+          <span class="method get">GET</span>
+          <code>/api/user/:telegramId</code>
+        </div>
+        <p>Возвращает информацию о пользователе по его Telegram ID</p>
+      </div>
+      
+      <div class="endpoint">
+        <div>
+          <span class="method post">POST</span>
+          <code>/api/user/complete-registration</code>
+        </div>
+        <p>Завершает регистрацию пользователя с дополнительными данными</p>
+      </div>
+    </div>
+    
+    <h2>Лицензия</h2>
+    <p>Этот проект лицензирован по лицензии ISC.</p>
+    
+    <h2>Контакты</h2>
+    <p>По вопросам или поддержке обращайтесь к сопровождающим проекта.</p>
+    
+    <hr>
+    <p style="text-align: center;">© 2023 Система аутентификации Telegram</p>
+  </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <!-- ENGLISH VERSION -->
+  <div id="en-content" class="lang-section">
+    <h1>Telegram Auth System</h1>
+    
+    <div class="docs-link-container">
+      <p>Interactive API documentation is available at:</p>
+      <a href="/docs" class="docs-link">Open Swagger Documentation</a>
+    </div>
+    
+    <p>This is a system for authenticating users via Telegram. It provides a secure and convenient way to implement login functionality using Telegram's authentication mechanism.</p>
+    
+    <h2>Features</h2>
+    <ul>
+      <li>QR code-based Telegram authentication</li>
+      <li>JWT token generation for API access</li>
+      <li>User management with additional profile data</li>
+      <li>Session-based authentication flow</li>
+      <li>Telegram bot integration</li>
+    </ul>
+    
+    <h2>Getting Started</h2>
+    <p>To use this API:</p>
+    <ol>
+      <li>Set up your environment variables in a <code>.env</code> file (see Configuration section)</li>
+      <li>Install dependencies with <code>npm install</code></li>
+      <li>Start the server with <code>npm start</code> or <code>npm run dev</code> for development</li>
+    </ol>
+    
+    <h2>Configuration</h2>
+    <p>Required environment variables:</p>
+    <pre>
+# Server
+PORT=3000
+NODE_ENV=development
 
-    <script>
-      const qrEl = document.getElementById("qrcode");
-      const linkEl = document.getElementById("link");
-      const statusEl = document.getElementById("status");
+# Database
+DB_HOST=localhost
+DB_USER=your_db_user
+DB_PASSWORD=your_db_password
+DB_NAME=your_db_name
+DB_PORT=3306
 
-      let authKey = null;
-      let userData = null;
+# Telegram Bot
+BOT_TOKEN=your_telegram_bot_token
+BOT_USERNAME=your_bot_username
 
-      document
-        .getElementById("telegramBtn")
-        .addEventListener("click", function () {
-          this.classList.add("hidden");
-          document.getElementById("qrSection").classList.remove("hidden");
-          generateAuth();
+# Auth
+JWT_SECRET=your_jwt_secret
+JWT_EXPIRES_IN=7d
+SESSION_EXPIRE_MINUTES=5
+
+# Frontend
+FRONTEND_URL=http://localhost:3000
+    </pre>
+    
+    <h2>API Documentation</h2>
+    <p>Full API documentation is available at <a href="/docs">/docs</a> using Swagger UI. It provides an interactive interface for testing all API endpoints.</p>
+    
+    <div class="api-section">
+      <h3>Authentication Endpoints</h3>
+      
+      <div class="endpoint">
+        <div>
+          <span class="method post">POST</span>
+          <code>/api/auth/generate</code>
+        </div>
+        <p>Generates a new authentication session for QR code login</p>
+      </div>
+      
+      <div class="endpoint">
+        <div>
+          <span class="method get">GET</span>
+          <code>/api/auth/status/:key</code>
+        </div>
+        <p>Returns the status of an authentication session</p>
+      </div>
+      
+      <div class="endpoint">
+        <div>
+          <span class="method post">POST</span>
+          <code>/api/auth/register</code>
+        </div>
+        <p>Registers a new user with the provided information</p>
+      </div>
+      
+      <div class="endpoint">
+        <div>
+          <span class="method get">GET</span>
+          <code>/api/auth/check/:snils</code>
+        </div>
+        <p>Checks if a user with the given SNILS exists</p>
+      </div>
+    </div>
+    
+    <div class="api-section">
+      <h3>User Endpoints</h3>
+      
+      <div class="endpoint">
+        <div>
+          <span class="method get">GET</span>
+          <code>/api/user/me</code>
+        </div>
+        <p>Returns information about the current authenticated user</p>
+      </div>
+      
+      <div class="endpoint">
+        <div>
+          <span class="method get">GET</span>
+          <code>/api/user/:telegramId</code>
+        </div>
+        <p>Returns information about a user by their Telegram ID</p>
+      </div>
+      
+      <div class="endpoint">
+        <div>
+          <span class="method post">POST</span>
+          <code>/api/user/complete-registration</code>
+        </div>
+        <p>Completes registration for a user with additional data</p>
+      </div>
+    </div>
+    
+    <h2>License</h2>
+    <p>This project is licensed under the ISC License.</p>
+    
+    <h2>Contact</h2>
+    <p>For questions or support, please contact the project maintainers.</p>
+    
+    <hr>
+    <p style="text-align: center;">© 2023 Telegram Auth System</p>
+  </div>
+
+  <script>
+    // Language toggle functionality
+    document.addEventListener('DOMContentLoaded', function() {
+      const langButtons = document.querySelectorAll('.language-btn');
+      const langSections = document.querySelectorAll('.lang-section');
+      
+      langButtons.forEach(button => {
+        button.addEventListener('click', function() {
+          const lang = this.getAttribute('data-lang');
+          
+          // Update active button
+          langButtons.forEach(btn => btn.classList.remove('active'));
+          this.classList.add('active');
+          
+          // Update active section
+          langSections.forEach(section => section.classList.remove('active'));
+          document.getElementById(`${lang}-content`).classList.add('active');
         });
-
-      async function generateAuth() {
-        const res = await fetch("/api/auth/generate", {
-          method: "POST",
-        });
-        const data = await res.json();
-
-        if (!data.success) {
-          qrEl.innerText = "❌ QR код yaratilmadi.";
-          return;
-        }
-
-        authKey = data.authKey;
-        const botUrl = data.qrData;
-
-        // QR kodni yaratish
-        qrEl.innerHTML = "";
-        new QRCode(qrEl, {
-          text: botUrl,
-          width: 200,
-          height: 200,
-        });
-
-        linkEl.href = botUrl;
-        linkEl.innerText = botUrl;
-
-        checkStatus();
-      }
-
-      async function checkStatus() {
-        if (!authKey) return;
-
-        const res = await fetch(`/api/auth/status/${authKey}`);
-        const data = await res.json();
-
-        const statusEl = document.getElementById("status");
-
-        if (data.status === "completed") {
-          userData = data.user;
-          const user = data.user;
-          statusEl.className = "status success";
-          statusEl.innerHTML = `✅ Добро пожаловать, ${
-            user.firstName || "Пользователь"
-          }!<br>📱 ${user.phone}`;
-          return;
-        }
-
-        if (data.status === "expired") {
-          statusEl.className = "status error";
-          statusEl.innerHTML =
-            "❌ Сессия истекла. Пожалуйста, попробуйте снова.";
-          return;
-        }
-
-        statusEl.className = "status waiting";
-        statusEl.innerHTML =
-          '<span class="loader"></span>Ожидание подтверждения в Telegram...';
-        setTimeout(checkStatus, 3000);
-      }
-
-      async function register() {
-        if (!authKey) {
-          alert("Сначала выполните вход через Telegram.");
-          return;
-        }
-
-        const res = await fetch(`/api/auth/register/`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(userData),
-        });
-        const data = await res.json();
-
-        if (data.success) {
-          alert("Вы успешно зарегистрированы!");
-          window.location.href = "/dashboard"; // Перенаправление на страницу после регистрации
-        } else {
-          alert("Ошибка регистрации: " + data.message);
-        }
-      }
-    </script>
-  </body>
+      });
+    });
+  </script>
+</body>
 </html>

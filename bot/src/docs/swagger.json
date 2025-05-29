@@ -1,0 +1,813 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Telegram Auth API",
+    "description": "API for Telegram authentication system with QR codes",
+    "version": "1.0.0",
+    "contact": {
+      "email": "support@luk-sirius.ru"
+    }
+  },
+  "servers": [
+    {
+      "url": "/api",
+      "description": "Development server"
+    }
+  ],
+  "tags": [
+    {
+      "name": "health",
+      "description": "Health check endpoints"
+    },
+    {
+      "name": "auth",
+      "description": "Authentication endpoints"
+    },
+    {
+      "name": "user",
+      "description": "User management endpoints"
+    }
+  ],
+  "paths": {
+    "/health": {
+      "get": {
+        "tags": ["health"],
+        "summary": "Get API health status",
+        "description": "Returns the health status of the API",
+        "responses": {
+          "200": {
+            "description": "Health status information",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/generate": {
+      "post": {
+        "tags": ["auth"],
+        "summary": "Generate authentication session",
+        "description": "Generates a new authentication session for QR code login",
+        "responses": {
+          "200": {
+            "description": "Authentication session generated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthGenerateResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/status/{key}": {
+      "get": {
+        "tags": ["auth"],
+        "summary": "Get authentication session status",
+        "description": "Returns the status of an authentication session",
+        "parameters": [
+          {
+            "name": "key",
+            "in": "path",
+            "required": true,
+            "description": "Authentication session key",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Authentication session status",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthStatusResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid session key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/register": {
+      "post": {
+        "tags": ["auth"],
+        "summary": "Register a new user",
+        "description": "Registers a new user with the provided information",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserRegistrationRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "User registered successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserRegistrationResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Telegram ID is required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "User already exists",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/check/{snils}": {
+      "get": {
+        "tags": ["auth"],
+        "summary": "Check if a user with the given SNILS exists",
+        "description": "Returns whether a user with the given SNILS exists",
+        "parameters": [
+          {
+            "name": "snils",
+            "in": "path",
+            "required": true,
+            "description": "User SNILS",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User exists",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "exists": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "user": {
+                      "$ref": "#/components/schemas/User"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "202": {
+            "description": "User not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "exists": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "User not found"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "SNILS is required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/user/me": {
+      "get": {
+        "tags": ["user"],
+        "summary": "Get current user information",
+        "description": "Returns information about the current authenticated user",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Current user information",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "user": {
+                      "$ref": "#/components/schemas/User"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/user/{telegramId}": {
+      "get": {
+        "tags": ["user"],
+        "summary": "Get user information by Telegram ID",
+        "description": "Returns information about a user by their Telegram ID",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "telegramId",
+            "in": "path",
+            "required": true,
+            "description": "Telegram ID of the user",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User information",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "user": {
+                      "$ref": "#/components/schemas/User"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/user/complete-registration": {
+      "post": {
+        "tags": ["user"],
+        "summary": "Complete user registration",
+        "description": "Completes registration for a user with additional data",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["telegramId"],
+                "properties": {
+                  "telegramId": {
+                    "type": "string",
+                    "description": "Telegram ID of the user"
+                  },
+                  "additionalData": {
+                    "type": "object",
+                    "description": "Additional user data"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Registration completed successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Telegram ID is required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
+    "schemas": {
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": false
+          },
+          "error": {
+            "type": "string",
+            "example": "Error message"
+          }
+        }
+      },
+      "HealthResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "example": "OK"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2023-01-01T00:00:00.000Z"
+          },
+          "version": {
+            "type": "string",
+            "example": "1.0.0"
+          }
+        }
+      },
+      "AuthGenerateResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": true
+          },
+          "authKey": {
+            "type": "string",
+            "example": "1a2b3c4d5e6f7g8h9i0j"
+          },
+          "qrData": {
+            "type": "string",
+            "example": "https://t.me/bot?start=1a2b3c4d5e6f7g8h9i0j"
+          },
+          "expiresAt": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2023-01-01T00:05:00.000Z"
+          },
+          "expiresInSeconds": {
+            "type": "integer",
+            "example": 300
+          }
+        }
+      },
+      "AuthStatusResponse": {
+        "type": "object",
+        "oneOf": [
+          {
+            "properties": {
+              "success": {
+                "type": "boolean",
+                "example": true
+              },
+              "status": {
+                "type": "string",
+                "enum": ["waiting", "contact_requested"],
+                "example": "waiting"
+              },
+              "expiresAt": {
+                "type": "string",
+                "format": "date-time",
+                "example": "2023-01-01T00:05:00.000Z"
+              }
+            }
+          },
+          {
+            "properties": {
+              "success": {
+                "type": "boolean",
+                "example": true
+              },
+              "status": {
+                "type": "string",
+                "enum": ["completed"],
+                "example": "completed"
+              },
+              "token": {
+                "type": "string",
+                "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+              },
+              "user": {
+                "$ref": "#/components/schemas/UserBasic"
+              }
+            }
+          },
+          {
+            "properties": {
+              "success": {
+                "type": "boolean",
+                "example": false
+              },
+              "status": {
+                "type": "string",
+                "enum": ["expired"],
+                "example": "expired"
+              }
+            }
+          }
+        ]
+      },
+      "UserBasic": {
+        "type": "object",
+        "properties": {
+          "telegramId": {
+            "type": "string",
+            "example": "123456789"
+          },
+          "username": {
+            "type": "string",
+            "example": "johndoe"
+          },
+          "firstName": {
+            "type": "string",
+            "example": "John"
+          },
+          "lastName": {
+            "type": "string",
+            "example": "Doe"
+          },
+          "phone": {
+            "type": "string",
+            "example": "+79123456789"
+          },
+          "isRegistered": {
+            "type": "boolean",
+            "example": true
+          }
+        }
+      },
+      "User": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "example": 1
+          },
+          "telegramId": {
+            "type": "string",
+            "example": "123456789"
+          },
+          "username": {
+            "type": "string",
+            "example": "johndoe"
+          },
+          "firstName": {
+            "type": "string",
+            "example": "John"
+          },
+          "lastName": {
+            "type": "string",
+            "example": "Doe"
+          },
+          "phone": {
+            "type": "string",
+            "example": "+79123456789"
+          },
+          "isRegistered": {
+            "type": "boolean",
+            "example": true
+          },
+          "snils": {
+            "type": "string",
+            "example": "123-456-789 00"
+          },
+          "telefon": {
+            "type": "string",
+            "example": "+79123456789"
+          },
+          "familia": {
+            "type": "string",
+            "example": "Иванов"
+          },
+          "imya": {
+            "type": "string",
+            "example": "Иван"
+          },
+          "otchestvo": {
+            "type": "string",
+            "example": "Иванович"
+          },
+          "klass": {
+            "type": "string",
+            "example": "10А"
+          },
+          "napravl": {
+            "type": "string",
+            "example": "Физика"
+          },
+          "obshestvo": {
+            "type": "string",
+            "example": "Школа №1"
+          },
+          "potok": {
+            "type": "string",
+            "example": "Осень 2023"
+          },
+          "dateRozdenia": {
+            "type": "string",
+            "format": "date",
+            "example": "2005-01-01"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2023-01-01T00:00:00.000Z"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2023-01-01T00:00:00.000Z"
+          }
+        }
+      },
+      "UserRegistrationRequest": {
+        "type": "object",
+        "required": ["telegramId"],
+        "properties": {
+          "telegramId": {
+            "type": "string",
+            "example": "123456789"
+          },
+          "username": {
+            "type": "string",
+            "example": "johndoe"
+          },
+          "firstName": {
+            "type": "string",
+            "example": "John"
+          },
+          "lastName": {
+            "type": "string",
+            "example": "Doe"
+          },
+          "phone": {
+            "type": "string",
+            "example": "+79123456789"
+          },
+          "snils": {
+            "type": "string",
+            "example": "123-456-789 00"
+          },
+          "telefon": {
+            "type": "string",
+            "example": "+79123456789"
+          },
+          "familia": {
+            "type": "string",
+            "example": "Иванов"
+          },
+          "imya": {
+            "type": "string",
+            "example": "Иван"
+          },
+          "otchestvo": {
+            "type": "string",
+            "example": "Иванович"
+          },
+          "klass": {
+            "type": "string",
+            "example": "10А"
+          },
+          "napravl": {
+            "type": "string",
+            "example": "Физика"
+          },
+          "obshestvo": {
+            "type": "string",
+            "example": "Школа №1"
+          },
+          "potok": {
+            "type": "string",
+            "example": "Осень 2023"
+          },
+          "dateRozdenia": {
+            "type": "string",
+            "format": "date",
+            "example": "2005-01-01"
+          }
+        }
+      },
+      "UserRegistrationResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": true
+          },
+          "user": {
+            "$ref": "#/components/schemas/User"
+          }
+        }
+      }
+    }
+  }
+}

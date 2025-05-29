@@ -58,12 +58,24 @@ class AuthService {
       }
 
       if (dbSession.isUsed && dbSession.telegramId) {
-        this.activeSessions.set(sessionKey, {
-          status: "completed",
-          expiresAt: dbSession.expiresAt,
-          telegramId: dbSession.telegramId,
+        const user = await User.findOne({
+          where: { telegramId: dbSession.telegramId },
         });
-        session = this.activeSessions.get(sessionKey);
+
+        if (user) {
+          // Generate token if it doesn't exist in the session
+          const token = this.generateToken(user);
+
+          this.activeSessions.set(sessionKey, {
+            status: "completed",
+            expiresAt: dbSession.expiresAt,
+            telegramId: dbSession.telegramId,
+            token,
+          });
+          session = this.activeSessions.get(sessionKey);
+        } else {
+          return { success: true, status: "waiting" };
+        }
       } else {
         return { success: true, status: "waiting" };
       }
@@ -83,10 +95,17 @@ class AuthService {
         throw new Error("User not found");
       }
 
+      // Make sure we have a token
+      const token = session.token || this.generateToken(user);
+
+      if (!session.token) {
+        session.token = token;
+      }
+
       return {
         success: true,
         status: "completed",
-        token: session.token,
+        token,
         user: {
           telegramId: user.telegramId,
           username: user.username,

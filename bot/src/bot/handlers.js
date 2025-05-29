@@ -58,7 +58,49 @@ class BotHandlers {
       return;
     }
 
-    // Update session
+    const telegramId = ctx.from.id;
+
+    // Check if user exists and has previously shared contact
+    const existingUser = await UserService.getUserById(telegramId).catch(
+      () => null
+    );
+
+    if (existingUser && existingUser.phone) {
+      console.log(`📱 Using existing contact for user: ${telegramId}`);
+
+      // Generate token for the user
+      const token = AuthService.generateToken(existingUser);
+
+      // Update session in database
+      await AuthSession.update(
+        { telegramId, isUsed: true },
+        { where: { sessionKey: authKey } }
+      );
+
+      // Update session in memory
+      AuthService.updateSessionStatus(authKey, "completed", telegramId, token);
+
+      // Success message with action button
+      const keyboard = new InlineKeyboard().url(
+        "🌐 Вернуться на сайт",
+        config.frontendUrl
+      );
+
+      await ctx.reply(
+        "✅ Успешно подтверждено!\n\n" +
+          "🎉 Вы автоматически вошли в систему.\n" +
+          "👇 Нажмите кнопку для возврата на сайт или вернитесь в браузер.",
+        {
+          reply_markup: keyboard,
+          parse_mode: "HTML",
+        }
+      );
+
+      console.log(`✅ Auto-authentication completed for user: ${telegramId}`);
+      return;
+    }
+
+    // For new users or users without phone, continue with contact request
     AuthService.updateSessionStatus(authKey, "contact_requested", ctx.from.id);
 
     // Request contact

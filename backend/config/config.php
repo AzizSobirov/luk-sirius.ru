@@ -1,7 +1,7 @@
 <?php
-$host = '89-111-142-177.swtest.ru';
+$host = '';
 $user = 'test-db';
-$password = 'aD0lX6rQ4p';
+$password = '';
 $dbname = 'test-db';
 
 $xls_file = '1.xlsx';
